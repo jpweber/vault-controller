@@ -1,5 +1,5 @@
 #!/bin/bash
 ./build
-docker build --no-cache -t kelseyhightower/vault-init:0.0.1 .
-docker push kelseyhightower/vault-init:0.0.1
+docker build --no-cache -t jpweber/vault-init:0.0.2 .
+docker push jpweber/vault-init:0.0.2
 rm vault-init
