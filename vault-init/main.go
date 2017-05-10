@@ -35,6 +35,11 @@ func main() {
 		log.Fatal("POD_NAME must be set and non-empty")
 	}
 
+	containerName := os.Getenv("CONTAINER_NAME")
+	if name == "" {
+		log.Fatal("POD_NAME must be set and non-empty")
+	}
+
 	namespace := os.Getenv("POD_NAMESPACE")
 	if namespace == "" {
 		log.Fatal("POD_NAMESPACE must be set and non-empty")
@@ -77,7 +82,7 @@ func main() {
 	retryDelay := 5 * time.Second
 	go func() {
 		for {
-			err := requestToken(vaultControllerAddr, name, namespace)
+			err := requestToken(vaultControllerAddr, name, namespace, containerName)
 			if err != nil {
 				log.Printf("token request: Request error %v; retrying in %v", err, retryDelay)
 				time.Sleep(retryDelay)
@@ -108,8 +113,9 @@ func main() {
 	}
 }
 
-func requestToken(vaultControllerAddr, name, namespace string) error {
-	u := fmt.Sprintf("%s/token?name=%s&namespace=%s", vaultControllerAddr, name, namespace)
+func requestToken(vaultControllerAddr, name, namespace, containerName string) error {
+	// u := fmt.Sprintf("%s/token?name=%s&namespace=%s", vaultControllerAddr, name, namespace)
+	u := fmt.Sprintf("%s/secretid?name=%s&namespace=%s&containername=%s", vaultControllerAddr, name, namespace, containerName)
 	log.Printf("Requesting a new wrapped token from %s", vaultControllerAddr)
 	resp, err := http.Post(u, "", nil)
 	if err != nil {
@@ -127,3 +133,23 @@ func requestToken(vaultControllerAddr, name, namespace string) error {
 	}
 	return fmt.Errorf("%s", data)
 }
+
+// func requestSecretID(vaultControllerAddr, name, namespace string) error {
+// 	u := fmt.Sprintf("%s/secretid?name=%s&namespace=%s", vaultControllerAddr, name, namespace)
+// 	log.Printf("Requesting a new wrapped secretid from %s", vaultControllerAddr)
+// 	resp, err := http.Post(u, "", nil)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer resp.Body.Close()
+
+// 	if resp.StatusCode == 202 {
+// 		return nil
+// 	}
+
+// 	data, err := ioutil.ReadAll(resp.Body)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return fmt.Errorf("%s", data)
+// }
