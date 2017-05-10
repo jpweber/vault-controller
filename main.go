@@ -43,6 +43,7 @@ func main() {
 	}
 
 	http.Handle("/token", handler{tokenRequestHandler})
+	http.Handle("/secretid", handler{secretIDRequestHandler})
 	go func() {
 		log.Fatal(http.ListenAndServe(":80", nil))
 	}()
