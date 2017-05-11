@@ -55,7 +55,7 @@ func main() {
 		vaultControllerAddr = "http://vault-controller"
 	}
 
-	http.Handle("/", tokenHandler{vaultAddr})
+	http.Handle("/", tokenHandler{vaultAddr, namespace, name})
 	go func() {
 		log.Fatal(http.ListenAndServe(":80", nil))
 	}()
